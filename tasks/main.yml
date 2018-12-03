@@ -1,5 +1,5 @@
 ---
-# In the last task, we will switch connection plugin to be sute to not reuse
+# In the last task, we will switch connection plugin to be sure to not reuse
 # a previous connection.
 - name: get current connection plugin and port number
   set_fact:
@@ -39,9 +39,11 @@
   poll: 0
 
 
-# In case the listen port of sshd has changed, switch 'ansible_host' to the
+# In case the listen port of sshd has changed, switch 'ansible_port' to the
 # new port for all further tasks in the play. Note that even with that, the
-# next task may fail because of the firewall blocking the new/custom port..
+# next task may fail because of the firewall blocking the new/custom port, so
+# the ssh service is unreachable; or because of a busy port due to another
+# program already listening on it, so the ssh service fails to reload/restart.
 - name: switch 'ansible_port' number
   set_fact:
     ansible_port: |
