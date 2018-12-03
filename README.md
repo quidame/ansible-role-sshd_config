@@ -39,8 +39,8 @@ sshd_apply__timeout: 20
 Template Variables
 ------------------
 
-The template provided with this role also supports `sshd_config`'s options as
-variable names with `sshd__` as prefix, followed by the name of the option, in
+The template provided with this role supports all `sshd_config`'s options as
+variable names with `sshd__` as prefix followed by the name of the option, in
 lowercase. For example:
 
 ```yaml
@@ -98,21 +98,43 @@ HostKey /etc/ssh/ssh_host_ecdsa_key
 HostKey /etc/ssh/ssh_host_ed25519_key
 ```
 
-For first options, template variables accept both a string that will be passed
-as is to the option, or a yaml list that will be processed to be passed to the
-option as a comma-separated or space-separated list, depending on the option.
+For first options (`AllowUsers`, `Ciphers` ...) template variables accept both
+a string that will be passed as is to the option, or a yaml list that will be
+processed to be passed to the option as a comma-separated or space-separated
+list, depending on the option.
 
-For second options, template variables accept both a string that will be passed
-as is to the option, or a yaml list that will be processed to be passed to a
-list of the same option, one value per call of the option. For example:
+For second options (`Port`, `ListenAddress` ...) template variables accept both
+a string that will be passed as is to the option, or a yaml list that will be
+processed to be passed to a list of the same option, one value per line.
+
+For example:
+
+* These are correct declarations:
+
+```yaml
+sshd__allowusers: alice bob
+sshd__allowusers:
+  - alice
+  - bob
+sshd__ciphers: chacha20-poly1305@openssh.com,aes256-ctr,aes256-gcm@openssh.com
+sshd__ciphers:
+  - chacha20-poly1305@openssh.com
+  - aes256-ctr
+  - aes256-gcm@openssh.com
+```
+
+* These are incorrect declarations:
+
+```yaml
+sshd__allowusers: alice,bob
+sshd__ciphers: chacha20-poly1305@openssh.com aes256-ctr aes256-gcm@openssh.com
+```
 
 * These are correct declarations:
 
 ```yaml
 sshd__port: 2222
 sshd__port: [ 2222 ]
-sshd__port:
-  - 2222
 sshd__port: [ 22, 2222 ]
 sshd__port:
   - 22
@@ -126,6 +148,69 @@ sshd__port: 22 2222
 sshd__port: 22,2222
 ```
 
+### OBJECTS
+
+As a `Match` directive:
+
+- accepts two parameters, a criteria and a series of patterns matching this
+  criteria;
+- applies a subset of global options to objects caught by the matching rule;
+- may appear more than once;
+
+the `sshd__match` is a complex object whose values are passed verbatim by the
+template to `sshd_config`.
+
+```yaml
+sshd__match:
+  - criteria: CRITERIA
+    patterns: PATTERN1,PATTERN2
+    options:
+      - "OptionOne value1"
+      - "OptionTwo value2"
+      - "OptionSix value6"
+  - criteria: CRITERIA
+    patterns:
+      - PATTERNx
+      - PATTERNy
+      - PATTERNz
+    options:
+      - "OptionFour value4"
+      - "OptionFive value5"
+```"
+
+For example:
+
+```yaml
+sshd__match:
+  - criteria: Group
+    patterns: sftp-only
+    options:
+      - "AuthorizedKeysFile /etc/sftp-only/authorized_keys/%u"
+      - "ChrootDirectory /srv/sftp-only/%u"
+      - "ForceCommand internal-sftp -u 077"
+      - "AllowTcpForwarding no"
+  - criteria: User
+    patterns:
+      - root
+      - admin
+    options:
+      - "PermitRootLogin yes"
+      - "AuthenticationMethods publickey,password"
+```
+
+That will result in:
+
+```
+Match Group sftp-only
+    AuthorizedKeysFile /etc/sftp-only/authorized_keys/%u
+    ChrootDirectory /srv/sftp-only/%u
+    ForceCommand internal-sftp -u 077
+    AllowTcpForwarding no
+
+Match User root,admin
+    PermitRootLogin yes
+    AuthenticationMethods publickey,password
+```
 
 Dependencies
 ------------
