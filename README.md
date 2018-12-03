@@ -56,13 +56,13 @@ will give:
 Port 2222
 UsePAM yes
 PermitRootLogin forced-commands-only
-PasswordAuthentication: no
+PasswordAuthentication no
 ```
 
 ### BOOLEANS
 
-Even if ssh booleans only accept 'yes' or 'no' values, the template accepts
-all ansible's booleans and translates them to 'yes' or 'no'. **NOTE** that it
+Even if ssh booleans only accept `yes` or `no` values, the template accepts
+all ansible's booleans and translates them to `yes` or `no`. **NOTE** that it
 is a feature of the template provided by the role, *not a feature of the role
  itself*. If you point `sshd_apply__template` to your own, ensure to do the
 same, otherwise something like:
@@ -144,7 +144,7 @@ Example Playbook
       sshd__usepam: yes
       sshd__acceptenv:
         - LANG
-	- LC_*
+        - LC_*
 ```
 
 License
