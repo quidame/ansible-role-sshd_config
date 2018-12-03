@@ -1,7 +1,7 @@
 ---
 # In the last task, we will switch connection plugin to be sure to not reuse
 # a previous connection.
-- name: get current connection plugin and port number
+- name: get current connection plugin
   set_fact:
     initial_connection: "{{ ansible_connection }}"
   failed_when: "ansible_connection not in ['paramiko','ssh']"
