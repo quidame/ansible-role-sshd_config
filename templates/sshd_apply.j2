@@ -362,9 +362,9 @@ UseLogin {{ 'yes' if sshd__uselogin|bool else 'no' }}{% endif %}
 #	ForceCommand cvs server
 {% else %}
 {% for match in sshd__match %}
-Match {{ match.type }} {{ [match.list]|flatten|join(' ') }}
-{% for opt in match.opts %}
-    {{ opt }}
+Match {{ match.criteria }} {{ [match.patterns]|flatten|join(',') }}
+{% for option in match.options %}
+    {{ option }}
 {% endfor %}
 
 {% endfor %}{% endif %}
