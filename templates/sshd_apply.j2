@@ -1,0 +1,370 @@
+# {{ ansible_managed }}
+
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
+
+# The strategy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options override the
+# default value.
+
+{% if sshd__port is undefined and ansible_port is undefined %}
+#Port 22
+{% elif sshd__port is defined %}{% for port in [sshd__port]|flatten %}
+Port {{ port }}
+{% endfor %}{% else %}
+Port {{ ansible_port }}{% endif %}
+
+{% if sshd__addressfamily is undefined %}
+#AddressFamily any{% else %}
+AddressFamily {{ sshd__addressfamily }}{% endif %}
+
+{% if sshd__listenaddress is undefined %}
+#ListenAddress 0.0.0.0
+#ListenAddress [::]{% else %}{% for listenaddress in [sshd__listenaddress]|flatten %}
+ListenAddress {{ listenaddress }}
+{% endfor %}{% endif %}
+
+{% if sshd__usepam is undefined %}
+#UsePAM no{% else %}
+UsePAM {{ 'yes' if sshd__usepam|bool else 'no' }}{% endif %}
+
+{% if sshd__logingracetime is undefined %}
+#LoginGraceTime 2m{% else %}
+LoginGraceTime {{ sshd__logingracetime }}{% endif %}
+
+{% if sshd__x11displayoffset is undefined %}
+#X11DisplayOffset 10{% else %}
+X11DisplayOffset {{ sshd__x11displayoffset }}{% endif %}
+
+{% if sshd__maxauthtries is undefined %}
+#MaxAuthTries 6{% else %}
+MaxAuthTries {{ sshd__maxauthtries }}{% endif %}
+
+{% if sshd__maxsessions is undefined %}
+#MaxSessions 10{% else %}
+MaxSessions {{ sshd__maxsessions }}{% endif %}
+
+{% if sshd__clientaliveinterval is undefined %}
+#ClientAliveInterval 0{% else %}
+ClientAliveInterval {{ sshd__clientaliveinterval }}{% endif %}
+
+{% if sshd__clientalivecountmax is undefined %}
+#ClientAliveCountMax 3{% else %}
+ClientAliveCountMax {{ sshd__clientalivecountmax }}{% endif %}
+
+{% if sshd__streamlocalbindmask is undefined %}
+#StreamLocalBindMask 0177{% else %}
+StreamLocalBindMask {{ sshd__streamlocalbindmask }}{% endif %}
+
+{% if sshd__permitrootlogin is undefined %}
+#PermitRootLogin prohibit-password{% elif sshd__permitrootlogin|type_debug == 'bool' %}
+PermitRootLogin {{ 'yes' if sshd__permitrootlogin else 'no' }}{% else %}
+PermitRootLogin {{ sshd__permitrootlogin }}{% endif %}
+
+{% if sshd__ignorerhosts is undefined %}
+#IgnoreRhosts yes{% else %}
+IgnoreRhosts {{ 'yes' if sshd__ignorerhosts|bool else 'no' }}{% endif %}
+
+{% if sshd__ignoreuserknownhosts is undefined %}
+#IgnoreUserKnownHosts no{% else %}
+IgnoreUserKnownHosts {{ 'yes' if sshd__ignoreuserknownhosts|bool else 'no' }}{% endif %}
+
+{% if sshd__hostbasedauthentication is undefined %}
+#HostbasedAuthentication no{% else %}
+HostbasedAuthentication {{ 'yes' if sshd__hostbasedauthentication|bool else 'no' }}{% endif %}
+
+{% if sshd__hostbasedusesnamefrompacketonly is undefined %}
+#HostbasedUsesNameFromPacketOnly no{% else %}
+HostbasedUsesNameFromPacketOnly {{ 'yes' if sshd__hostbasedusesnamefrompacketonly|bool else 'no' }}{% endif %}
+
+{% if sshd__pubkeyauthentication is undefined %}
+#PubkeyAuthentication yes{% else %}
+PubkeyAuthentication {{ 'yes' if sshd__pubkeyauthentication|bool else 'no' }}{% endif %}
+
+{% if sshd__kerberosauthentication is undefined %}
+#KerberosAuthentication no{% else %}
+KerberosAuthentication {{ 'yes' if sshd__kerberosauthentication|bool else 'no' }}{% endif %}
+
+{% if sshd__kerberosgetafstoken is undefined %}
+#KerberosGetAFSToken no{% else %}
+KerberosGetAFSToken {{ 'yes' if sshd__kerberosgetafstoken|bool else 'no' }}{% endif %}
+
+{% if sshd__kerberosorlocalpasswd is undefined %}
+#KerberosOrLocalPasswd yes{% else %}
+KerberosOrLocalPasswd {{ 'yes' if sshd__kerberosorlocalpasswd|bool else 'no' }}{% endif %}
+
+{% if sshd__kerberosticketcleanup is undefined %}
+#KerberosTicketCleanup yes{% else %}
+KerberosTicketCleanup {{ 'yes' if sshd__kerberosticketcleanup|bool else 'no' }}{% endif %}
+
+{% if sshd__gssapiauthentication is undefined %}
+#GSSAPIAuthentication no{% else %}
+GSSAPIAuthentication {{ 'yes' if sshd__gssapiauthentication|bool else 'no' }}{% endif %}
+
+{% if sshd__gssapikeyexchange is undefined %}
+#GSSAPIKeyExchange no{% else %}
+GSSAPIKeyExchange {{ 'yes' if sshd__gssapikeyexchange|bool else 'no' }}{% endif %}
+
+{% if sshd__gssapicleanupcredentials is undefined %}
+#GSSAPICleanupCredentials yes{% else %}
+GSSAPICleanupCredentials {{ 'yes' if sshd__gssapicleanupcredentials|bool else 'no' }}{% endif %}
+
+{% if sshd__gssapistrictacceptorcheck is undefined %}
+#GSSAPIStrictAcceptorCheck yes{% else %}
+GSSAPIStrictAcceptorCheck {{ 'yes' if sshd__gssapistrictacceptorcheck|bool else 'no' }}{% endif %}
+
+{% if sshd__gssapistorecredentialsonrekey is undefined %}
+#GSSAPIStoreCredentialsOnRekey no{% else %}
+GSSAPIStoreCredentialsOnRekey {{ 'yes' if sshd__gssapistorecredentialsonrekey|bool else 'no' }}{% endif %}
+
+{% if sshd__passwordauthentication is undefined %}
+#PasswordAuthentication yes{% else %}
+PasswordAuthentication {{ 'yes' if sshd__passwordauthentication|bool else 'no' }}{% endif %}
+
+{% if sshd__kbdinteractiveauthentication is undefined %}
+#KbdInteractiveAuthentication no{% else %}
+KbdInteractiveAuthentication {{ 'yes' if sshd__kbdinteractiveauthentication|bool else 'no' }}{% endif %}
+
+{% if sshd__challengeresponseauthentication is undefined %}
+#ChallengeResponseAuthentication yes{% else %}
+ChallengeResponseAuthentication {{ 'yes' if sshd__challengeresponseauthentication|bool else 'no' }}{% endif %}
+
+{% if sshd__printmotd is undefined %}
+#PrintMotd yes{% else %}
+PrintMotd {{ 'yes' if sshd__printmotd|bool else 'no' }}{% endif %}
+
+{% if sshd__printlastlog is undefined %}
+#PrintLastLog yes{% else %}
+PrintLastLog {{ 'yes' if sshd__printlastlog|bool else 'no' }}{% endif %}
+
+{% if sshd__x11forwarding is undefined %}
+#X11Forwarding no{% else %}
+X11Forwarding {{ 'yes' if sshd__x11forwarding|bool else 'no' }}{% endif %}
+
+{% if sshd__x11uselocalhost is undefined %}
+#X11UseLocalhost yes{% else %}
+X11UseLocalhost {{ 'yes' if sshd__x11uselocalhost|bool else 'no' }}{% endif %}
+
+{% if sshd__permittty is undefined %}
+#PermitTTY yes{% else %}
+PermitTTY {{ 'yes' if sshd__permittty|bool else 'no' }}{% endif %}
+
+{% if sshd__permituserrc is undefined %}
+#PermitUserRC yes{% else %}
+PermitUserRC {{ 'yes' if sshd__permituserrc|bool else 'no' }}{% endif %}
+
+{% if sshd__strictmodes is undefined %}
+#StrictModes yes{% else %}
+StrictModes {{ 'yes' if sshd__strictmodes|bool else 'no' }}{% endif %}
+
+{% if sshd__tcpkeepalive is undefined %}
+#TCPKeepAlive yes{% else %}
+TCPKeepAlive {{ 'yes' if sshd__tcpkeepalive|bool else 'no' }}{% endif %}
+
+{% if sshd__permitemptypasswords is undefined %}
+#PermitEmptyPasswords no{% else %}
+PermitEmptyPasswords {{ 'yes' if sshd__permitemptypasswords|bool else 'no' }}{% endif %}
+
+{% if sshd__permituserenvironment is undefined %}
+#PermitUserEnvironment no{% else %}
+PermitUserEnvironment {{ 'yes' if sshd__permituserenvironment|bool else 'no' }}{% endif %}
+
+{% if sshd__compression is undefined %}
+#Compression delayed{% elif sshd__compression|type_debug == 'bool' %}
+Compression {{ 'yes' if sshd__compression|bool else 'no' }}{% else %}
+Compression {{ sshd__compression }}{% endif %}
+
+{% if sshd__gatewayports is undefined %}
+#GatewayPorts no{% else %}
+GatewayPorts {{ 'yes' if sshd__gatewayports|bool else 'no' }}{% endif %}
+
+{% if sshd__usedns is undefined %}
+#UseDNS no{% else %}
+UseDNS {{ 'yes' if sshd__usedns|bool else 'no' }}{% endif %}
+
+{% if sshd__allowtcpforwarding is undefined %}
+#AllowTcpForwarding yes{% else %}
+AllowTcpForwarding {{ 'yes' if sshd__allowtcpforwarding|bool else 'no' }}{% endif %}
+
+{% if sshd__allowagentforwarding is undefined %}
+#AllowAgentForwarding yes{% else %}
+AllowAgentForwarding {{ 'yes' if sshd__allowagentforwarding|bool else 'no' }}{% endif %}
+
+{% if sshd__disableforwarding is undefined %}
+#DisableForwarding no{% else %}
+DisableForwarding {{ 'yes' if sshd__disableforwarding|bool else 'no' }}{% endif %}
+
+{% if sshd__allowstreamlocalforwarding is undefined %}
+#AllowStreamLocalForwarding yes{% else %}
+AllowStreamLocalForwarding {{ 'yes' if sshd__allowstreamlocalforwarding|bool else 'no' }}{% endif %}
+
+{% if sshd__streamlocalbindunlink is undefined %}
+#StreamLocalBindUnlink no{% else %}
+StreamLocalBindUnlink {{ 'yes' if sshd__streamlocalbindunlink|bool else 'no' }}{% endif %}
+
+{% if sshd__useprivilegeseparation is undefined %}
+#UsePrivilegeSeparation sandbox{% elif sshd__useprivilegeseparation|type_debug == 'bool' %}
+UsePrivilegeSeparation {{ 'yes' if sshd__useprivilegeseparation|bool else 'no' }}{% else %}
+UsePrivilegeSeparation {{ sshd__useprivilegeseparation }}{% endif %}
+
+{% if sshd__fingerprinthash is undefined %}
+#FingerprintHash SHA256{% else %}
+FingerprintHash {{ sshd__fingerprinthash }}{% endif %}
+
+{% if sshd__pidfile is undefined %}
+#PidFile /run/sshd.pid{% else %}
+PidFile {{ sshd__pidfile }}{% endif %}
+
+{% if sshd__xauthlocation is undefined %}
+#XAuthLocation /usr/bin/xautha{% else %}
+XAuthLocation {{ sshd__xauthlocation }}{% endif %}
+
+{% if sshd__ciphers is undefined %}
+#Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com{% else %}
+Ciphers {{ [sshd__ciphers]|flatten|join(',') }}{% endif %}
+
+{% if sshd__macs is undefined %}
+#MACs umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1{% else %}
+MACs {{ [sshd__macs]|flatten|join(',') }}{% endif %}
+
+{% if sshd__versionaddendum is undefined %}
+#VersionAddendum none{% else %}
+VersionAddendum {{ sshd__versionaddendum }}{% endif %}
+
+{% if sshd__kexalgorithms is undefined %}
+#kexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256,diffie-hellman-group14-sha1{% else %}
+KexAlgorithms {{ [sshd__kexalgorithms]|flatten|join(',') }}{% endif %}
+
+{% if sshd__hostbasedacceptedkeytypes is undefined %}
+#HostBasedAcceptedKeyTypes ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,rsa-sha2-512,rsa-sha2-256,ssh-rsa{% else %}
+HostBasedAcceptedKeyTypes {{ [sshd__hostbasedacceptedkeytypes]|flatten|join(',') }}{% endif %}
+
+{% if sshd__hostkeyalgorithms is undefined %}
+#HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,rsa-sha2-512,rsa-sha2-256,ssh-rsa{% else %}
+HostKeyAlgorithms {{ [sshd__hostkeyalgorithms]|flatten|join(',') }}{% endif %}
+
+{% if sshd__pubkeyacceptedkeytypes is undefined %}
+#PubkeyAcceptedKeyTypes ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,rsa-sha2-512,rsa-sha2-256,ssh-rsa{% else %}
+PubkeyAcceptedKeyTypes {{ [sshd__pubkeyacceptedkeytypes]|flatten|join(',') }}{% endif %}
+
+{% if sshd__loglevel is undefined %}
+#LogLevel INFO{% else %}
+LogLevel {{ sshd__loglevel }}{% endif %}
+
+{% if sshd__syslogfacility is undefined %}
+#SyslogFacility AUTH{% else %}
+SyslogFacility {{ sshd__syslogfacility }}{% endif %}
+
+{% if sshd__authorizedkeysfile is undefined %}
+#AuthorizedKeysFile .ssh/authorized_keys .ssh/authorized_keys2{% else %}
+AuthorizedKeysFile {{ [sshd__authorizedkeysfile]|flatten|join(' ') }}{% endif %}
+
+{% if sshd__hostkey is undefined %}
+#HostKey /etc/ssh/ssh_host_rsa_key
+#HostKey /etc/ssh/ssh_host_ecdsa_key
+#HostKey /etc/ssh/ssh_host_ed25519_key
+{% else %}{% for hostkey in [sshd__hostkey]|flatten %}
+HostKey {{ hostkey }}
+{% endfor %}{% endif %}
+
+{% if sshd__acceptenv is undefined %}
+#AcceptEnv{% else %}
+AcceptEnv {{ [sshd__acceptenv]|flatten|join(' ') }}{% endif %}
+
+{% if sshd__authenticationmethods is undefined %}
+#AuthenticationMethods any{% else %}
+AuthenticationMethods {{ [sshd__authenticationmethods]|flatten|join(' ') }}{% endif %}
+
+{% if sshd__maxstartups is undefined %}
+#MaxStartups 10:30:100{% else %}
+MaxStartups {{ sshd__maxstartups }}{% endif %}
+
+{% if sshd__permittunnel is undefined %}
+#PermitTunnel no{% elif sshd__permittunnel|type_debug == 'bool' %}
+PermitTunnel {{ 'yes' if sshd__permittunnel|bool else 'no' }}{% else %}
+PermitTunnel {{ sshd__permittunnel }}{% endif %}
+
+{% if sshd__ipqos is undefined %}
+#IPQoS lowdelay throughput{% else %}
+IPQoS {{ sshd__ipqos }}{% endif %}
+
+{% if sshd__rekeylimit is undefined %}
+#RekeyLimit default none{% else %}
+RekeyLimit {{ sshd__rekeylimit }}{% endif %}
+
+{% if sshd__permitopen is undefined %}
+#PermitOpen any{% else %}
+PermitOpen {{ [sshd__permitopen]|flatten|join(' ') }}{% endif %}
+
+
+
+{% if sshd__allowgroups is undefined %}
+#AllowGroups *{% else %}
+AllowGroups {{ [sshd__allowgroups]|flatten|join(' ') }}{% endif %}
+
+{% if sshd__allowusers is undefined %}
+#AllowUsers *{% else %}
+AllowUsers {{ [sshd__allowusers]|flatten|join(' ') }}{% endif %}
+
+{% if sshd__authorizedprincipalsfile is undefined %}
+#AuthorizedPrincipalsFile none{% else %}
+AuthorizedPrincipalsFile {{ sshd__authorizedprincipalsfile }}{% endif %}
+
+{% if sshd__authorizedkeyscommand is undefined %}
+#AuthorizedKeysCommand none{% else %}
+AuthorizedKeysCommand {{ sshd__authorizedkeyscommand }}{% endif %}
+
+{% if sshd__authorizedkeyscommanduser is undefined %}
+#AuthorizedKeysCommandUser nobody{% else %}
+AuthorizedKeysCommandUser {{ sshd__authorizedkeyscommanduser }}{% endif %}
+
+{% if sshd__banner is undefined %}
+#Banner none{% else %}
+Banner {{ sshd__banner }}{% endif %}
+
+{% if sshd__chrootdirectory is undefined %}
+#ChrootDirectory none{% else %}
+ChrootDirectory {{ sshd__chrootdirectory }}{% endif %}
+
+{% if sshd__denygroups is undefined %}
+#DenyGroups none{% else %}
+DenyGroups {{ [sshd__denygroups]|flatten|join(' ') }}{% endif %}
+
+{% if sshd__denyusers is undefined %}
+#DenyUsers none{% else %}
+DenyUsers {{ [sshd__denyusers]|flatten|join(' ') }}{% endif %}
+
+{% if sshd__forcecommand is undefined %}
+#ForceCommand none{% else %}
+ForceCommand {{ sshd__forcecommand }}{% endif %}
+
+{% if sshd__hostcertificate is undefined %}
+#HostCertificate none{% else %}
+HostCertificate {{ sshd__hostcertificate }}{% endif %}
+
+{% if sshd__subsystem is undefined %}
+#Subsystem sftp none{% else %}
+Subsystem {{ sshd__subsystem }}{% endif %}
+
+{% if sshd__uselogin is undefined %}
+#UseLogin no{% else %}
+UseLogin {{ 'yes' if sshd__uselogin|bool else 'no' }}{% endif %}
+
+
+
+{% if sshd__match is undefined %}
+# Example of overriding settings on a per-user basis
+#Match User anoncvs
+#	X11Forwarding no
+#	AllowTcpForwarding no
+#	PermitTTY no
+#	ForceCommand cvs server
+{% else %}
+{% for match in sshd__match %}
+Match {{ match.type }} {{ [match.list]|flatten|join(' ') }}
+{% for opt in match.opts %}
+    {{ opt }}
+{% endfor %}
+
+{% endfor %}{% endif %}

@@ -1,0 +1,70 @@
+---
+# In the last task, we will switch connection plugin to be sute to not reuse
+# a previous connection.
+- name: get current connection plugin and port number
+  set_fact:
+    initial_connection: "{{ ansible_connection }}"
+  failed_when: "ansible_connection not in ['paramiko','ssh']"
+
+
+# First ensure the resulting file is in good shape when making it available on
+# the remote host
+- name: build sshd configuration to be applied
+  template:
+    src: "{{ sshd_apply__template }}"
+    dest: /run/sshd.apply
+    validate: "sshd -tf %s"
+
+
+# No choice. We need a shell task to run in background. `async=1` and `poll=0`
+# are mandatory parameters to ensure ansible detaches itself from the script.
+# So the next task can be played DURING this one.
+- name: apply sshd configuration
+  shell: >
+    (
+      set -e
+      rm -f /run/sshd.cookie
+      mount -o bind /run/sshd.apply /etc/ssh/sshd_config
+      systemctl reload sshd.service || true
+      umount /etc/ssh/sshd_config
+      i=0
+      while test $i -lt {{ sshd_apply__timeout|int }}; do
+        sleep 1; i=$((i+1))
+        test -e /run/sshd.cookie && exit 0
+      done
+      systemctl restart sshd.service &&
+      touch /run/sshd.cookie
+    ) &
+  async: 1
+  poll: 0
+
+
+# In case the listen port of sshd has changed, switch 'ansible_host' to the
+# new port for all further tasks in the play. Note that even with that, the
+# next task may fail because of the firewall blocking the new/custom port..
+- name: switch 'ansible_port' number
+  set_fact:
+    ansible_port: |
+      {% if sshd_apply__switch_port|type_debug == 'int' %}{{ sshd_apply__switch_port }}
+      {% else %}{{ [sshd__port]|flatten|first }}{% endif %}
+  when:
+    - sshd__port is defined
+    - sshd_apply__switch_port is defined
+    - sshd_apply__switch_port|bool == True
+
+
+# If the cookie exists, it means initial config has been restored, and it
+# shouln't. If it doesn't exist, it means we have to create it to avoid the
+# rollback.
+- name: confirm applied configuration
+  file:
+    path: /run/sshd.cookie
+    state: "{{ item }}"
+  register: confirm
+  failed_when: '( item == "absent" and confirm is changed ) or ( item == "touch" and confirm is not changed )'
+  with_items:
+    - absent
+    - touch
+  # By switching connection plugin, we are sure a new connection is initialized,
+  # i.e. we don't reuse a control socket from a previous task.
+  connection: "{{ 'paramiko' if initial_connection == 'ssh' else 'ssh' }}"

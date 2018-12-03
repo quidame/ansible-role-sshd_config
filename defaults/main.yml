@@ -1,0 +1,43 @@
+---
+################################################################################
+# sshd_apply__switch_port
+#
+# Port to switch on to confirm applied/current/runtime configuration. May be
+# `yes` (try to guess port number from new configuration), `no`, or a port
+# number.
+#
+sshd_apply__switch_port: yes
+
+
+################################################################################
+# sshd_apply__template
+#
+# Path of a template file that once evaluated is used as configuration to be
+# loaded by sshd.
+#
+sshd_apply__template: "sshd_apply.j2"
+
+
+################################################################################
+# sshd_apply__timeout
+#
+# The delay, in seconds, after what the initial ssh server configuration is
+# restored if the confirmation file is missing.
+#
+sshd_apply__timeout: 20
+
+
+################################################################################
+# sshd__*
+#
+# Templating of sshd_config with variables prefixed with 'sshd__' and followed
+# by the sshd_config's option name, in lowercase, as:
+# Port                            => sshd__port
+# UsePAM                          => sshd__usepam
+# AllowUsers                      => sshd__allowusers
+# ChallengeResponseAuthentication => sshd__challengeresponseauthentication
+#
+# This one is mandatory for ansible to transfer a module from the controller to
+# the target. You may prefer the external sftp-server program, but this setting
+# is safe since it uses a built-in subsystem and requires no dependency.
+sshd__subsystem: sftp internal-sftp
