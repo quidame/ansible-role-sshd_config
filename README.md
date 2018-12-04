@@ -4,6 +4,35 @@ sshd_apply
 Setup SSH service from a template. A rollback feature ensures you will not be
 locked out the target host.
 
+Description
+-----------
+
+This role populates target's `sshd_config` from a template, and reloads ssh
+daemon with this new configuration. If the next task fails, meaning that the
+target is not reachable anymore, the daemon is restarted with its initial
+configuration, so the ansible controller, at least, is not locked out of its
+target.
+
+When reconfiguring SSH remotely, you'll have to restart it. Common cases of
+lock out may appear when you want to harden the service:
+
+* the `Port` value has changed and
+  - the firewall is not aware of that and the new port is blocked;
+  - the new port is already in use and SSH died at reload/restart;
+* the `ansible_user` is missing in the new list `AllowUsers`;
+* a `Match` directive with restrictive options unfortunately applies to the
+  `ansible_user`;
+* ...
+
+Some of these cases may still apply to this role, except that the lock out is
+temporary (defaults to 20 seconds). As the `sshd_config` is not overwritten
+**before** reloading the daemon, even if the rollback fails (that is a very
+bad situation and shouldn't happen), rebooting the host will restore its
+ssh configuration.
+
+The template provided by this role exhaustively supports all options of the
+server. See the `Template Variables` section below.
+
 Requirements
 ------------
 
