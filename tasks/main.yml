@@ -1,6 +1,6 @@
 ---
-# In the last task, we will switch connection plugin to be sure to not reuse
-# a previous connection.
+# In the confirmation task, we will switch connection plugin to be sure to not
+# reuse a previous connection.
 - name: get current connection plugin
   set_fact:
     initial_connection: "{{ ansible_connection }}"
@@ -13,6 +13,7 @@
   template:
     src: "{{ sshd_apply__template }}"
     dest: /run/sshd.apply
+    mode: 0644
     validate: "sshd -tf %s"
 
 
@@ -70,3 +71,14 @@
   # By switching connection plugin, we are sure a new connection is initialized,
   # i.e. we don't reuse a control socket from a previous task.
   connection: "{{ 'paramiko' if initial_connection == 'ssh' else 'ssh' }}"
+
+
+# Finally save the current configuration to make it persists across reboots.
+- name: confirm applied configuration as persistent
+  template:
+    src: "{{ sshd_apply__template }}"
+    dest: /etc/ssh/sshd_config
+    mode: 0644
+    validate: "sshd -tf %s"
+  when: sshd_apply__save_state|bool == True
+
