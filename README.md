@@ -4,6 +4,22 @@ sshd_apply
 Setup SSH service from a template. A rollback feature ensures you will not be
 locked out the target host.
 
+**SUMMARY**
+
+- [Description](#description)
+- [Requirements](#requirements)
+- [Role Variables](#role-variables)
+- [Template Variables](#template-variables)
+  - [booleans](#booleans)
+  - [lists](#lists)
+  - [objects](#objects)
+- [Dependencies](#dependencies)
+- [Example Playbook](#example-playbook)
+- [Galaxy](#galaxy)
+- [License](#license)
+- [Author Information](#author-information)
+
+
 Description
 -----------
 
@@ -88,7 +104,7 @@ PermitRootLogin forced-commands-only
 PasswordAuthentication no
 ```
 
-### BOOLEANS
+### booleans
 
 Even if ssh booleans only accept `yes` or `no` values, the template accepts
 all ansible's booleans and translates them to `yes` or `no`. **NOTE** that it
@@ -108,7 +124,7 @@ and fail.
 This translation to `yes`/`no` values also applies to mixed-type options that
 accept either a boolean or a keyword, as do `PermitRootLogin` or `PermitTunnel`
 
-### LISTS
+### lists
 
 Some `sshd_config`'s options may accept a comma-separated or a space-separated
 list of values in a single call. For example:
@@ -177,7 +193,7 @@ sshd__port: 22 2222
 sshd__port: 22,2222
 ```
 
-### OBJECTS
+### objects
 
 As a `Match` directive:
 
@@ -205,7 +221,7 @@ sshd__match:
     options:
       - "OptionFour value4"
       - "OptionFive value5"
-```"
+```
 
 For example:
 
@@ -244,7 +260,7 @@ Match User root,admin
 Dependencies
 ------------
 
-None.
+This role has no dependency.
 
 Example Playbook
 ----------------
@@ -259,6 +275,25 @@ Example Playbook
       sshd__acceptenv:
         - LANG
         - LC_*
+```
+
+Galaxy
+------
+
+To make use of this role as a galaxy role, put the following lines in
+`requirements.yml`:
+
+```yaml
+- name: sshd_apply
+  src: https://github.com/quidame/ansible-role-sshd_apply.git
+  version: 0.2.0
+  scm: git
+```
+
+and then
+
+```bash
+ansible-galaxy install -r requirements.yml
 ```
 
 License
