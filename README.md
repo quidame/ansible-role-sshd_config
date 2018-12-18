@@ -1,8 +1,8 @@
 sshd_apply
 ==========
 
-Setup SSH service from a template. A rollback feature ensures you will not be
-locked out the target host.
+Setup OpenSSH service from a template. A rollback feature ensures the Ansible
+Controller will not be locked out the target host.
 
 **SUMMARY**
 
@@ -44,10 +44,10 @@ Some of these cases may still apply to this role, except that the lock out is
 temporary (defaults to 20 seconds). As the `sshd_config` is not overwritten
 **before** reloading the daemon, even if the rollback fails (that is a very
 bad situation and shouldn't happen), rebooting the host will restore its
-ssh configuration.
+initial ssh configuration.
 
 The template provided by this role exhaustively supports all options of the
-server. See the `Template Variables` section below.
+server. See the [Template Variables](#template-variables) section below.
 
 Requirements
 ------------
@@ -58,6 +58,15 @@ Role Variables
 --------------
 
 This role can be set using the following variables:
+
+* Whether or not to make currently applied configuration persistent. If
+  `False`, the sshd configuration set by the role will still apply after the
+  role has been played, but this configuration will not be reapplied after
+  reboot.
+
+```yaml
+sshd_apply__save_state: yes
+```
 
 * Port to switch on to confirm applied/current/runtime configuration. May be
   `yes` (try to guess port number from new configuration), `no`, or a port
@@ -122,7 +131,7 @@ PasswordAuthentication False
 and fail.
 
 This translation to `yes`/`no` values also applies to mixed-type options that
-accept either a boolean or a keyword, as do `PermitRootLogin` or `PermitTunnel`
+accept either a boolean or a keyword, as do `PermitRootLogin` or `PermitTunnel`.
 
 ### lists
 
@@ -192,6 +201,9 @@ sshd__port:
 sshd__port: 22 2222
 sshd__port: 22,2222
 ```
+
+If you are in doubt about what inline list format is expected (spaces or commas)
+or if it is a multi-decarative option instead, just use a yaml list.
 
 ### objects
 
