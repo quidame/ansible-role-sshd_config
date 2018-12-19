@@ -52,7 +52,8 @@ server. See the [Template Variables](#template-variables) section below.
 Requirements
 ------------
 
-None.
+Both `ssh` and `paramiko` clients must be supported by the controller. This
+role doesn't work in *Cygwin* environment.
 
 Role Variables
 --------------
@@ -277,6 +278,8 @@ This role has no dependency.
 Example Playbook
 ----------------
 
+Configure `sshd_config` from scratch.
+
 ```yaml
 - hosts: servers
   roles:
@@ -287,6 +290,16 @@ Example Playbook
       sshd__acceptenv:
         - LANG
         - LC_*
+```
+
+Proof Of Concept: trigger a rollback due to misconfiguration. The file is valid
+regarding its syntax (empty) but ansible needs sftp subsystem enabled to work.
+
+```yaml
+- hosts: servers
+  roles:
+    - role: sshd_apply
+      sshd_apply__template: /dev/null
 ```
 
 Galaxy
