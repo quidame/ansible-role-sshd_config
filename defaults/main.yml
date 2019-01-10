@@ -48,5 +48,5 @@ sshd_apply__timeout: 20
 # This one is mandatory for ansible to transfer a module from the controller to
 # the target. You may prefer the external sftp-server program, but this setting
 # is safe since it uses a built-in subsystem and requires no dependency.
-sshd__subsystem: sftp internal-sftp
+sshd__subsystem_sftp: internal-sftp
 

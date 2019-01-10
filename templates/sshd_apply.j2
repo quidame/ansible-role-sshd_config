@@ -343,9 +343,9 @@ ForceCommand {{ sshd__forcecommand }}{% endif %}
 #HostCertificate none{% else %}
 HostCertificate {{ sshd__hostcertificate }}{% endif %}
 
-{% if sshd__subsystem is undefined %}
+{% if sshd__subsystem_sftp is undefined %}
 #Subsystem sftp none{% else %}
-Subsystem {{ sshd__subsystem }}{% endif %}
+Subsystem sftp {{ sshd__subsystem_sftp }}{% endif %}
 
 {% if sshd__uselogin is undefined %}
 #UseLogin no{% else %}
