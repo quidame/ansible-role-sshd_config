@@ -50,3 +50,156 @@ sshd_apply__timeout: 20
 # is safe since it uses a built-in subsystem and requires no dependency.
 sshd__subsystem_sftp: internal-sftp
 
+# This is the list of all variables supported by the template, with their
+# default values. Booleans accept any of yes/no, true/false, True/False and
+# 1/0 formats.
+#
+#sshd__port: 22
+#sshd__addressfamily: any
+#sshd__listenaddress: [ "0.0.0.0", "[::]" ]
+#sshd__usepam: no
+#sshd__logingracetime: 2m
+#sshd__x11displayoffset: 10
+#sshd__maxauthtries: 6
+#sshd__maxsessions: 10
+#sshd__clientaliveinterval: 0
+#sshd__clientalivecountmax: 3
+#sshd__streamlocalbindmask: 0177
+#sshd__permitrootlogin: prohibit-password
+#sshd__ignorerhosts: yes
+#sshd__ignoreuserknownhosts: no
+#sshd__hostbasedauthentication: no
+#sshd__hostbasedusesnamefrompacketonly: no
+#sshd__pubkeyauthentication: yes
+#sshd__kerberosauthentication: no
+#sshd__kerberosgetafstoken: no
+#sshd__kerberosorlocalpasswd: yes
+#sshd__kerberosticketcleanup: yes
+#sshd__gssapiauthentication: no
+#sshd__gssapikeyexchange: no
+#sshd__gssapicleanupcredentials: yes
+#sshd__gssapistrictacceptorcheck: yes
+#sshd__gssapistorecredentialsonrekey: no
+#sshd__passwordauthentication: yes
+#sshd__kbdinteractiveauthentication: no
+#sshd__challengeresponseauthentication: yes
+#sshd__printmotd: yes
+#sshd__printlastlog: yes
+#sshd__x11forwarding: no
+#sshd__x11uselocalhost: yes
+#sshd__permittty: yes
+#sshd__permituserrc: yes
+#sshd__strictmodes: yes
+#sshd__tcpkeepalive: yes
+#sshd__permitemptypasswords: no
+#sshd__permituserenvironment: no
+#sshd__compression: delayed
+#sshd__gatewayports: no
+#sshd__usedns: no
+#sshd__allowtcpforwarding: yes
+#sshd__allowagentforwarding: yes
+#sshd__disableforwarding: no
+#sshd__allowstreamlocalforwarding: yes
+#sshd__streamlocalbindunlink: no
+#sshd__useprivilegeseparation: sandbox
+#sshd__fingerprinthash: SHA256
+#sshd__pidfile: /run/sshd.pid
+#sshd__xauthlocation: /usr/bin/xauth
+#sshd__ciphers:
+#  - chacha20-poly1305@openssh.com
+#  - aes128-ctr
+#  - aes192-ctr
+#  - aes256-ctr
+#  - aes128-gcm@openssh.com
+#  - aes256-gcm@openssh.com
+#sshd__macs:
+#  - umac-64-etm@openssh.com
+#  - umac-128-etm@openssh.com
+#  - hmac-sha2-256-etm@openssh.com
+#  - hmac-sha2-512-etm@openssh.com
+#  - hmac-sha1-etm@openssh.com
+#  - umac-64@openssh.com
+#  - umac-128@openssh.com
+#  - hmac-sha2-256
+#  - hmac-sha2-512
+#  - hmac-sha1
+#sshd__versionaddendum: none
+#sshd__kexalgorithms:
+#  - curve25519-sha256
+#  - curve25519-sha256@libssh.org
+#  - ecdh-sha2-nistp256
+#  - ecdh-sha2-nistp384
+#  - ecdh-sha2-nistp521
+#  - diffie-hellman-group-exchange-sha256
+#  - diffie-hellman-group16-sha512
+#  - diffie-hellman-group18-sha512
+#  - diffie-hellman-group14-sha256
+#  - diffie-hellman-group14-sha1
+#sshd__hostbasedacceptedkeytypes:
+#  - ecdsa-sha2-nistp256-cert-v01@openssh.com
+#  - ecdsa-sha2-nistp384-cert-v01@openssh.com
+#  - ecdsa-sha2-nistp521-cert-v01@openssh.com
+#  - ssh-ed25519-cert-v01@openssh.com
+#  - ssh-rsa-cert-v01@openssh.com
+#  - ecdsa-sha2-nistp256
+#  - ecdsa-sha2-nistp384
+#  - ecdsa-sha2-nistp521
+#  - ssh-ed25519
+#  - rsa-sha2-512
+#  - rsa-sha2-256
+#  - ssh-rsa
+#sshd__hostkeyalgorithms:
+#  - ecdsa-sha2-nistp256-cert-v01@openssh.com
+#  - ecdsa-sha2-nistp384-cert-v01@openssh.com
+#  - ecdsa-sha2-nistp521-cert-v01@openssh.com
+#  - ssh-ed25519-cert-v01@openssh.com
+#  - ssh-rsa-cert-v01@openssh.com
+#  - ecdsa-sha2-nistp256
+#  - ecdsa-sha2-nistp384
+#  - ecdsa-sha2-nistp521
+#  - ssh-ed25519
+#  - rsa-sha2-512
+#  - rsa-sha2-256
+#  - ssh-rsa
+#sshd__pubkeyacceptedkeytypes:
+#  - ecdsa-sha2-nistp256-cert-v01@openssh.com
+#  - ecdsa-sha2-nistp384-cert-v01@openssh.com
+#  - ecdsa-sha2-nistp521-cert-v01@openssh.com
+#  - ssh-ed25519-cert-v01@openssh.com
+#  - ssh-rsa-cert-v01@openssh.com
+#  - ecdsa-sha2-nistp256
+#  - ecdsa-sha2-nistp384
+#  - ecdsa-sha2-nistp521
+#  - ssh-ed25519
+#  - rsa-sha2-512
+#  - rsa-sha2-256
+#  - ssh-rsa
+#sshd__loglevel: INFO
+#sshd__syslogfacility: AUTH
+#sshd__authorizedkeysfile:
+#  - .ssh/authorized_keys
+#  - .ssh/authorized_keys2
+#sshd__hostkey:
+#  - /etc/ssh/ssh_host_rsa_key
+#  - /etc/ssh/ssh_host_ecdsa_key
+#  - /etc/ssh/ssh_host_ed25519_key
+#sshd__acceptenv:
+#sshd__authenticationmethods: any
+#sshd__maxstartups: "10:30:100"
+#sshd__permittunnel: no
+#sshd__ipqos: lowdelay throughput
+#sshd__rekeylimit: default none
+#sshd__permitopen: any
+#sshd__allowgroups: *
+#sshd__allowusers: *
+#sshd__authorizedprincipalsfile: none
+#sshd__authorizedkeyscommand: none
+#sshd__authorizedkeyscommanduser: nobody
+#sshd__banner: none
+#sshd__chrootdirectory: none
+#sshd__denygroups: none
+#sshd__denyusers: none
+#sshd__forcecommand: none
+#sshd__hostcertificate: none
+#sshd__uselogin: no
+#sshd__match: []
