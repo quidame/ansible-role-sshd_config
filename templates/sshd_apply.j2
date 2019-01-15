@@ -217,7 +217,7 @@ FingerprintHash {{ sshd__fingerprinthash }}{% endif %}
 PidFile {{ sshd__pidfile }}{% endif %}
 
 {% if sshd__xauthlocation is undefined %}
-#XAuthLocation /usr/bin/xautha{% else %}
+#XAuthLocation /usr/bin/xauth{% else %}
 XAuthLocation {{ sshd__xauthlocation }}{% endif %}
 
 {% if sshd__ciphers is undefined %}
