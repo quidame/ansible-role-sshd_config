@@ -11,7 +11,7 @@
 # the remote host
 - name: build sshd configuration to be applied
   template:
-    src: "{{ sshd_apply__template }}"
+    src: "{{ sshd_config__template }}"
     dest: /run/sshd.apply
     mode: 0644
     validate: "sshd -tf %s"
@@ -29,7 +29,7 @@
       systemctl reload sshd.service || true
       umount /etc/ssh/sshd_config
       i=0
-      while test $i -lt {{ sshd_apply__timeout|int }}; do
+      while test $i -lt {{ sshd_config__timeout|int }}; do
         sleep 1; i=$((i+1))
         test -e /run/sshd.cookie && exit 0
       done
@@ -48,12 +48,12 @@
 - name: switch 'ansible_port' number
   set_fact:
     ansible_port: |
-      {% if sshd_apply__switch_port|type_debug == 'int' %}{{ sshd_apply__switch_port }}
+      {% if sshd_config__switch_port|type_debug == 'int' %}{{ sshd_config__switch_port }}
       {% else %}{{ [sshd__port]|flatten|first }}{% endif %}
   when:
     - sshd__port is defined
-    - sshd_apply__switch_port is defined
-    - sshd_apply__switch_port|bool == True
+    - sshd_config__switch_port is defined
+    - sshd_config__switch_port|bool == True
 
 
 # If the cookie exists, it means initial config has been restored, and it
@@ -76,9 +76,9 @@
 # Finally save the current configuration to make it persists across reboots.
 - name: confirm applied configuration as persistent
   template:
-    src: "{{ sshd_apply__template }}"
+    src: "{{ sshd_config__template }}"
     dest: /etc/ssh/sshd_config
     mode: 0644
     validate: "sshd -tf %s"
-  when: sshd_apply__save_state|bool == True
+  when: sshd_config__save_state|bool == True
 

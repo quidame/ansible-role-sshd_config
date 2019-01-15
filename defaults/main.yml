@@ -1,38 +1,38 @@
 ---
 ################################################################################
-# sshd_apply__save_state
+# sshd_config__save_state
 #
 # Whether or not to make the currently applied configuration persistent across
 # reboots. Default is `yes`.
 #
-sshd_apply__save_state: yes
+sshd_config__save_state: yes
 
 ################################################################################
-# sshd_apply__switch_port
+# sshd_config__switch_port
 #
 # Port to switch on to confirm applied/current/runtime configuration. May be
 # `yes` (try to guess port number from new configuration), `no`, or a port
 # number.
 #
-sshd_apply__switch_port: yes
+sshd_config__switch_port: yes
 
 
 ################################################################################
-# sshd_apply__template
+# sshd_config__template
 #
 # Path of a template file that once evaluated is used as configuration to be
 # loaded by sshd.
 #
-sshd_apply__template: "sshd_apply.j2"
+sshd_config__template: "sshd_config.j2"
 
 
 ################################################################################
-# sshd_apply__timeout
+# sshd_config__timeout
 #
 # The delay, in seconds, after what the initial ssh server configuration is
 # restored if the confirmation file is missing.
 #
-sshd_apply__timeout: 20
+sshd_config__timeout: 20
 
 
 ################################################################################
