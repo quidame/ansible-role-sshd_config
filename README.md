@@ -1,5 +1,5 @@
-sshd_apply
-==========
+sshd_config
+===========
 
 Setup OpenSSH service from a template. A rollback feature ensures the Ansible
 Controller will not be locked out the target host.
@@ -66,7 +66,7 @@ This role can be set using the following variables:
   reboot.
 
 ```yaml
-sshd_apply__save_state: yes
+sshd_config__save_state: yes
 ```
 
 * Port to switch on to confirm applied/current/runtime configuration. May be
@@ -74,21 +74,21 @@ sshd_apply__save_state: yes
   number.
 
 ```yaml
-sshd_apply__switch_port: yes
+sshd_config__switch_port: yes
 ```
 
 * Path of a template file that once evaluated is used as configuration to be
   loaded by sshd.
 
 ```yaml
-sshd_apply__template: sshd_apply.j2
+sshd_config__template: sshd_config.j2
 ```
 
 * The delay, in seconds, after what the initial ssh server's configuration is
   reloaded if the confirmation file is missing.
 
 ```yaml
-sshd_apply__timeout: 20
+sshd_config__timeout: 20
 ```
 
 Template Variables
@@ -119,7 +119,7 @@ PasswordAuthentication no
 Even if ssh booleans only accept `yes` or `no` values, the template accepts
 all ansible's booleans and translates them to `yes` or `no`. **NOTE** that it
 is a feature of the template provided by the role, *not a feature of the role
- itself*. If you point `sshd_apply__template` to your own, ensure to do the
+ itself*. If you point `sshd_config__template` to your own, ensure to do the
 same, otherwise something like:
 
 ```yaml
@@ -283,7 +283,7 @@ Configure `sshd_config` from scratch.
 ```yaml
 - hosts: servers
   roles:
-    - role: sshd_apply
+    - role: sshd_config
       sshd__passwordauthentication: no
       sshd__permitrootlogin: forced-commands-only
       sshd__usepam: yes
@@ -298,8 +298,8 @@ regarding its syntax (empty) but ansible needs sftp subsystem enabled to work.
 ```yaml
 - hosts: servers
   roles:
-    - role: sshd_apply
-      sshd_apply__template: /dev/null
+    - role: sshd_config
+      sshd_config__template: /dev/null
 ```
 
 Galaxy
@@ -309,8 +309,8 @@ To make use of this role as a galaxy role, put the following lines in
 `requirements.yml`:
 
 ```yaml
-- name: sshd_apply
-  src: https://github.com/quidame/ansible-role-sshd_apply.git
+- name: sshd_config
+  src: https://github.com/quidame/ansible-role-sshd_config.git
   version: 0.2.0
   scm: git
 ```

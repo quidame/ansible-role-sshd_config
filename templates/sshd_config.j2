@@ -217,7 +217,7 @@ FingerprintHash {{ sshd__fingerprinthash }}{% endif %}
 PidFile {{ sshd__pidfile }}{% endif %}
 
 {% if sshd__xauthlocation is undefined %}
-#XAuthLocation /usr/bin/xautha{% else %}
+#XAuthLocation /usr/bin/xauth{% else %}
 XAuthLocation {{ sshd__xauthlocation }}{% endif %}
 
 {% if sshd__ciphers is undefined %}
@@ -343,9 +343,9 @@ ForceCommand {{ sshd__forcecommand }}{% endif %}
 #HostCertificate none{% else %}
 HostCertificate {{ sshd__hostcertificate }}{% endif %}
 
-{% if sshd__subsystem is undefined %}
+{% if sshd__subsystem_sftp is undefined %}
 #Subsystem sftp none{% else %}
-Subsystem {{ sshd__subsystem }}{% endif %}
+Subsystem sftp {{ sshd__subsystem_sftp }}{% endif %}
 
 {% if sshd__uselogin is undefined %}
 #UseLogin no{% else %}
