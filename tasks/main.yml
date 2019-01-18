@@ -1,10 +1,18 @@
 ---
-# In the confirmation task, we will switch connection plugin to be sure to not
-# reuse a previous connection.
-- name: get current connection plugin
-  set_fact:
-    initial_connection: "{{ ansible_connection }}"
-  failed_when: "ansible_connection not in ['paramiko','ssh']"
+# A connection plugin override at task level is used to open a NEW connection
+# right after a new ruleset is applied, and this NEW connection is used to
+# validate the new ruleset, i.e. remove a file to avoid the rollback by the
+# previous task (a shell script running in background).  We ensure here that
+# when we say 'paramiko', it is 'paramiko'. Cases of failure can be:
+# - paramiko is not supported (?)
+# - ansible_connection is set to something else than paramiko from commandline
+#   (--extra-vars ansible_connection=ssh) or from the playbook, for example
+#   with the `set_fact` module or in play or task vars, etc.
+- name: check for connection plugin overrides
+  fail:
+    msg: "Unable to switch to 'paramiko' connection plugin."
+  connection: paramiko
+  failed_when: ansible_connection != 'paramiko'
 
 
 # First ensure the resulting file is in good shape when making it available on
@@ -12,7 +20,7 @@
 - name: build sshd configuration to be applied
   template:
     src: "{{ sshd_config__template }}"
-    dest: /run/sshd.apply
+    dest: "{{ sshd_config__path_buffer }}"
     mode: 0644
     validate: "sshd -tf %s"
 
@@ -20,24 +28,25 @@
 # No choice. We need a shell task to run in background. `async=1` and `poll=0`
 # are mandatory parameters to ensure ansible detaches itself from the script.
 # So the next task can be played DURING this one.
-- name: apply sshd configuration
+- name: 1. apply sshd configuration
   shell: >
     (
-      set -e
-      rm -f /run/sshd.cookie
-      mount -o bind /run/sshd.apply /etc/ssh/sshd_config
+      touch {{ sshd_config__path_cookie }}
+      mount -o bind {{ sshd_config__path_buffer }} /etc/ssh/sshd_config
       systemctl reload sshd.service || true
       umount /etc/ssh/sshd_config
+      rm -f {{ sshd_config__path_buffer }}
       i=0
       while test $i -lt {{ sshd_config__timeout|int }}; do
         sleep 1; i=$((i+1))
-        test -e /run/sshd.cookie && exit 0
+        test -e {{ sshd_config__path_cookie }} || exit 0
       done
       systemctl restart sshd.service &&
-      touch /run/sshd.cookie
+      rf -f {{ sshd_config__path_cookie }}
     ) &
   async: 1
   poll: 0
+  changed_when: true
 
 
 # In case the listen port of sshd has changed, switch 'ansible_port' to the
@@ -53,24 +62,23 @@
   when:
     - sshd__port is defined
     - sshd_config__switch_port is defined
-    - sshd_config__switch_port|bool == True
+    - sshd_config__switch_port|bool
 
 
-# If the cookie exists, it means initial config has been restored, and it
-# shouln't. If it doesn't exist, it means we have to create it to avoid the
-# rollback.
-- name: confirm applied configuration
+# If the cookie doesn't exist, it means initial ruleset has been restored,
+# and it shouln't. If it exists, it means we have to remove it to avoid the
+# rollback.  Last but not least, the task that removes the cookie MUST be the
+# first task to attempt to connect to the target.  The `wait_for_connection`
+# module is unusable here, since if a host is unreachable before the rollback,
+# the next task comes too late for all other hosts: rollbacks already happened
+# on all of them, whatever safe or not the applied ruleset was.
+- name: 2. confirm applied configuration
   file:
-    path: /run/sshd.cookie
-    state: "{{ item }}"
+    path: "{{ sshd_config__path_cookie }}"
+    state: absent
   register: confirm
-  failed_when: '( item == "absent" and confirm is changed ) or ( item == "touch" and confirm is not changed )'
-  with_items:
-    - absent
-    - touch
-  # By switching connection plugin, we are sure a new connection is initialized,
-  # i.e. we don't reuse a control socket from a previous task.
-  connection: "{{ 'paramiko' if initial_connection == 'ssh' else 'ssh' }}"
+  failed_when: confirm is not changed
+  connection: paramiko
 
 
 # Finally save the current configuration to make it persists across reboots.
@@ -80,5 +88,13 @@
     dest: /etc/ssh/sshd_config
     mode: 0644
     validate: "sshd -tf %s"
-  when: sshd_config__save_state|bool == True
+  when: sshd_config__persist|bool
+
+
+# Obviously
+- name: enable and start service
+  systemd:
+    name: sshd
+    enabled: yes
+    state: started
 
