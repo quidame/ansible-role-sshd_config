@@ -1,20 +1,4 @@
 ---
-# A connection plugin override at task level is used to open a NEW connection
-# right after a new ruleset is applied, and this NEW connection is used to
-# validate the new ruleset, i.e. remove a file to avoid the rollback by the
-# previous task (a shell script running in background).  We ensure here that
-# when we say 'paramiko', it is 'paramiko'. Cases of failure can be:
-# - paramiko is not supported (?)
-# - ansible_connection is set to something else than paramiko from commandline
-#   (--extra-vars ansible_connection=ssh) or from the playbook, for example
-#   with the `set_fact` module or in play or task vars, etc.
-- name: check for connection plugin overrides
-  fail:
-    msg: "Unable to switch to 'paramiko' connection plugin."
-  connection: paramiko
-  failed_when: ansible_connection != 'paramiko'
-
-
 # First ensure the resulting file is in good shape when making it available on
 # the remote host
 - name: build sshd configuration to be applied
@@ -65,6 +49,17 @@
     - sshd_config__switch_port|bool
 
 
+# reset_connection raises an unmanageable error when used with paramiko. This
+# meta task doesn't support 'when' conditionals, but fortunately supports tags.
+# And ansible 2.5 added special tags 'never' and 'always'. Additionally, as
+# ansible_connection is not a gathered fact, and its value is always set by
+# ansible entering the playbook, the tag can be set dynamically based on it.
+# Also note that prior to ansible 2.5.6, this meta task was buggy and failed
+# as well when no control socket was set.
+- meta: reset_connection
+  tags: "{{ 'always' if ansible_connection == 'ssh' else 'never' }}"
+
+
 # If the cookie doesn't exist, it means initial ruleset has been restored,
 # and it shouln't. If it exists, it means we have to remove it to avoid the
 # rollback.  Last but not least, the task that removes the cookie MUST be the
@@ -78,7 +73,6 @@
     state: absent
   register: confirm
   failed_when: confirm is not changed
-  connection: paramiko
 
 
 # Finally save the current configuration to make it persists across reboots.

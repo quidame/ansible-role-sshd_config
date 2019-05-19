@@ -52,8 +52,14 @@ server. See the [Template Variables](#template-variables) section below.
 Requirements
 ------------
 
-Both `ssh` and `paramiko` clients must be supported by the controller. This
-role doesn't work in *Cygwin* environment.
+With Ansible version prior to `2.5.6`, a control socket MUST be set either in
+`ANSIBLE_SSH_ARGS` environment variable, or in `ssh_args` setting of the
+`[ssh_connection]` in `ansible.cfg`. For example:
+
+```ini
+[ssh_connection]
+ssh_args = -o ControlMaster=auto
+```
 
 Role Variables
 --------------
@@ -204,7 +210,7 @@ sshd__port: 22,2222
 ```
 
 If you are in doubt about what inline list format is expected (spaces or commas)
-or if it is a multi-decarative option instead, just use a yaml list.
+or if it is a multi-declarative option instead, just use a yaml list.
 
 ### objects
 
